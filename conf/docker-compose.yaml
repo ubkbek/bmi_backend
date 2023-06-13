@@ -24,7 +24,7 @@ services:
     environment:
       - POSTGRES_DB=bmi_test
       - POSTGRES_USER=postgres
-      - POSTGRES_PASS=ubk_01001
+      - POSTGRES_PASSWORD=ubk_01001
     volumes:
       - /home/data/pgsql/14/main:/var/lib/postgresql/data
     restart: always

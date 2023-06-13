@@ -20,6 +20,7 @@ const POST = async (req, res) => {
     return res.status(error.statusCode).json("Internal Server Error!");
   }
 };
+
 const DELETE = async (req, res) => {
   try {
     const { id } = req.params;
@@ -34,4 +35,15 @@ const DELETE = async (req, res) => {
     return res.status(error.statusCode).json("Internal Server Error!");
   }
 };
-export default { GET, POST, DELETE };
+
+const PUT = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await model.updateNews(id);
+    return res.status(200).json(updated);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(error.statusCode).json("Internal Server Error!");
+  }
+};
+export default { GET, POST, DELETE, PUT };

@@ -124,6 +124,39 @@ const CREATE_STUDENT = async (req, res) => {
   }
 };
 
+const CREATE_GRADUATE = async (req, res) => {
+  try {
+    const { name, password, phone, image, info, study_at, course_id } =
+      req.body;
+
+    const newGraduate = await usersModel.createGraduate(
+      name,
+      password,
+      phone,
+      image,
+      info,
+      study_at,
+      course_id,
+      4
+    );
+
+    return res.status(201).json(newGraduate);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("Internal Server Error!");
+  }
+};
+
+const GET_GRADUATES = async (req, res) => {
+  try {
+    const graduates = await usersModel.getGraduates();
+    return res.status(200).json(graduates);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json("Internal Server Error!");
+  }
+};
+
 export default {
   CREATE_TEACHER,
   ALL_USERS,
@@ -132,4 +165,6 @@ export default {
   GET_TEACHERS,
   CREATE_STUDENT,
   GET_STUDENTS,
+  CREATE_GRADUATE,
+  GET_GRADUATES,
 };

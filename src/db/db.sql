@@ -2,7 +2,9 @@
 -- 2 - teacher
 -- 3 - admin
 
--- COURSES
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- courses
 DROP TABLE IF EXISTS courses;
 CREATE TABLE courses(
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -14,6 +16,101 @@ CREATE TABLE courses(
 );
 
 
+-- groups
+DROP TABLE IF EXISTS groups;
+CREATE TABLE groups(
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(64) NOT NULL,
+    teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- users
+DROP TABLE IF EXISTS users;
+CREATE TABLE users(
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    phone VARCHAR(16) NOT NULL,
+    status INT DEFAULT 1,
+    info VARCHAR,
+    course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY(course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    image VARCHAR,
+    study_at VARCHAR(256),
+    state INT DEFAULT 1,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+insert into users( name, password, phone, status, image)
+values ('ubk', '1q2w3e4r', '+998887776655', 3, 'https://www.tu-ilmenau.de/unionline/fileadmin/_processed_/0/0/csm_Person_Yury_Prof_Foto_AnLI_Footgrafie__2_.JPG_94f12fbf25.jpg');
+
+
+-- alter table users add column study_at VARCHAR;
+-- alter table users add column state integer default 1;
+
+
+--student_groups
+DROP TABLE IF EXISTS student_groups;
+
+CREATE TABLE student_groups(
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    student_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    group_id  UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    created_at TIMESTAMP default CURRENT_TIMESTAMP
+);
+
+
+-- news
+DROP TABLE IF EXISTS news;
+CREATE TABLE news(
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(128) NOT NULL,
+    text VARCHAR NOT NULL,
+    photo VARCHAR,
+    status boolean NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- appeals
+DROP TABLE IF EXISTS appeals;
+
+CREATE TABLE appeals(
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    message VARCHAR,
+    answered boolean default FALSE,
+    course_id UUID REFERENCES courses(id) on DELETE CASCADE,
+    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+
+
+-- GET APPEALS
+select
+    a.id,
+    a.name,
+    a.phone,
+    a.message,
+    a.answered,
+    c.title,
+    to_char(a.created_at, 'DD/MM/YYYY HH:MM:SS') as created_at
+from
+    appeals a
+LEFT JOIN
+    courses c
+ON
+    c.id = a.course_id
+ORDER BY
+    a.created_at DESC;
 
 SELECT
     s.id,
@@ -42,16 +139,28 @@ WHERE
     s.status = 1;
 
 
+SELECT
+    u.id,
+    u.name,
+    u.phone,
+    u.info,
+    c.title as course,
+    u.image,
+    to_char(u.created_at, 'DD-MM-YYYY') AS created_at
+FROM
+    users u
+LEFT JOIN
+    courses c
+ON
+    u.course_id = c.id
+WHERE
+    u.status = 4 AND u.state = 1
+ORDER BY
+    u.created_at DESC;
 
 
---student_groups
-DROP TABLE IF EXISTS student_groups;
 
-CREATE TABLE student_groups(
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    student_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    group_id  UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE
-);
+
 
 
 -- teachers
@@ -88,20 +197,10 @@ VALUES()
 
 
 
--- USERS
-DROP TABLE IF EXISTS users;
-CREATE TABLE users(
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(64) NOT NULL,
-    password VARCHAR(256) NOT NULL,
-    phone VARCHAR(16) NOT NULL,
-    status INT DEFAULT 1,
-    info VARCHAR,
-    course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
-    FOREIGN KEY(course_id) REFERENCES courses(id) ON DELETE CASCADE,
-    image VARCHAR,
-    user_created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+
+
+
+
 
 select * from users where course_id = course_id
 
@@ -118,26 +217,11 @@ where
     u.status = 1;
 
 
--- GROUPS
-DROP TABLE IF EXISTS groups;
-CREATE TABLE groups(
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    title VARCHAR(64) NOT NULL,
-    teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 
--- news
-DROP TABLE IF EXISTS news;
-CREATE TABLE news(
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    title VARCHAR(128) NOT NULL,
-    text VARCHAR NOT NULL,
-    photo VARCHAR,
-    created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+
+
+alter table users add column study_at
 
 INSERT INTO news(title, text, photo)
 values('Master class', 'Tajribali dasturchidan master class', 'https://upload.wikimedia.org/wikipedia/commons/d/d6/MasterClass_Logo.jpg');
@@ -256,15 +340,15 @@ ORDER BY g.title;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
--- HOMEWORKS
-DROP TABLE IF EXISTS homeworks;
-CREATE TABLE homeworks(
-    id SERIAL NOT NULL PRIMARY KEY,
-    title VARCHAR(64) NOT NULL,
-    content TEXT NOT NULL,
-    group_id INT,
-    FOREIGN KEY(group_id) REFERENCES groups(id) ON DELETE CASCADE
-);
+-- -- HOMEWORKS
+-- DROP TABLE IF EXISTS homeworks;
+-- CREATE TABLE homeworks(
+--     id SERIAL NOT NULL PRIMARY KEY,
+--     title VARCHAR(64) NOT NULL,
+--     content TEXT NOT NULL,
+--     group_id INT,
+--     FOREIGN KEY(group_id) REFERENCES groups(id) ON DELETE CASCADE
+-- );
 
 
 
@@ -281,83 +365,83 @@ CREATE TABLE homeworks(
 
 
 
-INSERT INTO users(user_name, user_password, user_phone, user_status)
-VALUES('ulugbek', 'ulugbek123', '998-88-388-01-18', 3);
+-- INSERT INTO users(user_name, user_password, user_phone, user_status)
+-- VALUES('ulugbek', 'ulugbek123', '998-88-388-01-18', 3);
 
-SELECT
-    u.user_id as id,
-    u.user_name as name,
-    u.user_password as password,
-    u.user_phone as phone,
-    u.user_created_at as created_at,
-    g.title as group
-FROM
-    users u
-INNER JOIN
-    student_groups sg
-ON
-    u.user_id = sg.student_id
-INNER JOIN
-    groups g
-ON
-    sg.group_id = g.id
-WHERE user_status = 1;
-
-
-DROP TABLE IF EXISTS student_groups;
-CREATE TABLE student_groups(
-    student_group_id SERIAL NOT NULL PRIMARY KEY,
-    student_id INT,
-    group_id INT,
-    FOREIGN KEY(student_id)
-    REFERENCES users(user_id)
-    ON DELETE CASCADE,
-    FOREIGN KEY(group_id)
-    REFERENCES groups(id)
-    on DELETE CASCADE
-);
+-- SELECT
+--     u.user_id as id,
+--     u.user_name as name,
+--     u.user_password as password,
+--     u.user_phone as phone,
+--     u.user_created_at as created_at,
+--     g.title as group
+-- FROM
+--     users u
+-- INNER JOIN
+--     student_groups sg
+-- ON
+--     u.user_id = sg.student_id
+-- INNER JOIN
+--     groups g
+-- ON
+--     sg.group_id = g.id
+-- WHERE user_status = 1;
 
 
-
-
-select
-    u.user_id as id,
-    g.title,
-    g.id as group_id
-from
-    student_groups sg
-JOIN
-    users u
-ON
-    sg.student_id = u.user_id
-JOIN
-    groups g
-ON
-    sg.group_id = g.id
-where
-    u.user_id = 100;
+-- DROP TABLE IF EXISTS student_groups;
+-- CREATE TABLE student_groups(
+--     student_group_id SERIAL NOT NULL PRIMARY KEY,
+--     student_id INT,
+--     group_id INT,
+--     FOREIGN KEY(student_id)
+--     REFERENCES users(user_id)
+--     ON DELETE CASCADE,
+--     FOREIGN KEY(group_id)
+--     REFERENCES groups(id)
+--     on DELETE CASCADE
+-- );
 
 
 
 
-    users: id, name, phone, email, password, status, created_at, info, updated_at,
-    courses: id, title, description, created_at, updated_at, price, info
-    groups: title, dis
+-- select
+--     u.user_id as id,
+--     g.title,
+--     g.id as group_id
+-- from
+--     student_groups sg
+-- JOIN
+--     users u
+-- ON
+--     sg.student_id = u.user_id
+-- JOIN
+--     groups g
+-- ON
+--     sg.group_id = g.id
+-- where
+--     u.user_id = 100;
 
 
-SELECT
-    courses.course_id,
-    courses.course_name,
-    json_agg(json_build_object('teacher_id', teachers.teacher_id, 'teacher_name', teachers.teacher_name)) AS teachers
-FROM
-    courses
-JOIN
-    course_teacher
-ON
-    courses.course_id = course_teacher.course_id
-JOIN
-    teachers
-ON
-    course_teacher.teacher_id = teachers.teacher_id
-GROUP BY
-    courses.course_id, courses.course_name;
+
+
+    -- users: id, name, phone, email, password, status, created_at, info, updated_at,
+    -- courses: id, title, description, created_at, updated_at, price, info
+    -- groups: title, dis
+
+
+-- SELECT
+--     courses.course_id,
+--     courses.course_name,
+--     json_agg(json_build_object('teacher_id', teachers.teacher_id, 'teacher_name', teachers.teacher_name)) AS teachers
+-- FROM
+--     courses
+-- JOIN
+--     course_teacher
+-- ON
+--     courses.course_id = course_teacher.course_id
+-- JOIN
+--     teachers
+-- ON
+--     course_teacher.teacher_id = teachers.teacher_id
+-- GROUP BY
+--     courses.course_id, courses.course_name;

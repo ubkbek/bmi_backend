@@ -15,10 +15,15 @@ const GET = async (req, res) => {
 
 const POST = async (req, res) => {
   try {
-    const { name, phone, message } = req.body;
+    const { name, phone, message, course_id } = req.body;
 
-    if (name && phone) {
-      const newAppeal = await model.createAppeal(name, phone, message);
+    if (name && phone && course_id) {
+      const newAppeal = await model.createAppeal(
+        name,
+        phone,
+        message,
+        course_id
+      );
 
       if (newAppeal) {
         return res.status(201).json({

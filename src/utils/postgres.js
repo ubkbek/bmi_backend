@@ -2,7 +2,7 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi",
+  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi_test",
 });
 
 const fetchData = async (SQL, ...params) => {

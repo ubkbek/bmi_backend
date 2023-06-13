@@ -46,6 +46,9 @@ RETURNING *
 const DELETE_USER = `DELETE FROM users WHERE id = $1 RETURNING *`;
 
 const CREATE_STUDENT = `INSERT INTO users(name, password, phone, image) VALUES($1, $2, $3, $4) RETURNING *`;
+
+const CREATE_GRADUATE = `INSERT INTO users(name, password, phone, image, info, study_at, course_id, status) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+
 const CREATE_STUDENT_GROUP = `INSERT INTO student_groups(student_id, group_id) VALUES($1, $2) RETURNING *`;
 
 const STUDENTS = `
@@ -74,6 +77,28 @@ ON
 g.course_id = c.id
 WHERE
 s.status = 1
+`;
+
+const GET_GRADUATES = `
+SELECT
+    u.id,
+    u.name,
+    u.phone,
+    u.info,
+    c.title as course,
+    u.image,
+    u.study_at,
+    to_char(u.created_at, 'DD-MM-YYYY') AS created_at
+FROM
+    users u
+LEFT JOIN
+    courses c
+ON
+    u.course_id = c.id
+WHERE
+    u.status = 4 AND u.state = 1
+ORDER BY
+    u.created_at DESC
 `;
 
 // functions
@@ -121,6 +146,30 @@ const allTeachers = async () => await fetchData(TEACHERS);
 
 const allStudents = async () => await fetchData(STUDENTS);
 
+const createGraduate = async (
+  name,
+  password,
+  phone,
+  image,
+  info,
+  study_at,
+  course_id,
+  status
+) =>
+  await fetchRow(
+    CREATE_GRADUATE,
+    name,
+    password,
+    phone,
+    image,
+    info,
+    study_at,
+    course_id,
+    status
+  );
+
+const getGraduates = async () => await fetchData(GET_GRADUATES);
+
 export default {
   createTeacher,
   allUsers,
@@ -130,4 +179,6 @@ export default {
   createStudent,
   createStudentGroup,
   allStudents,
+  createGraduate,
+  getGraduates,
 };

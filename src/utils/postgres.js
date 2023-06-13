@@ -5,7 +5,7 @@ const pool = new Pool({
 //  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi_test",
   user: "postgres",
   password: "ubk_01001",
-  host: "localhost",
+  host: "postgres", // This matches the service name in your Docker Compose file
   port: 5432,
   database: "bmi_test",
 });

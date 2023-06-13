@@ -80,7 +80,6 @@ const DELETE_USER = async (req, res) => {
 const GET_TEACHERS = async (req, res) => {
   try {
     const teachers = await usersModel.allTeachers();
-    console.log(teachers);
     return res.status(200).json(teachers);
   } catch (error) {
     console.log(error.message);

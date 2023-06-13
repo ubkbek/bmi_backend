@@ -50,7 +50,7 @@ const DELETE = async (req, res) => {
         deletedCourse,
       });
 
-    return res.status(200).json("Deleted Course");
+    // return res.status(200).json("Deleted Course");
   } catch (err) {
     return res.status(500).json("Internal Server Error");
   }
@@ -70,8 +70,6 @@ const PUT = async (req, res) => {
         updated: updated,
       });
     }
-
-    return res.json(id);
   } catch (err) {
     return res.status(500).json("Internal Server Error!");
   }

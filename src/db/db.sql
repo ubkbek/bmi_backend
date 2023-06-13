@@ -158,11 +158,6 @@ WHERE
 ORDER BY
     u.created_at DESC;
 
-
-
-
-
-
 -- teachers
 SELECT
     t.id,
@@ -194,10 +189,6 @@ SET answered = CASE WHEN answered = TRUE THEN FALSE ELSE TRUE END where id = '9d
 
 INSERT INTO appeals (name, phone, message)
 VALUES()
-
-
-
-
 
 
 

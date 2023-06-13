@@ -28,7 +28,6 @@ const createGroup = async (title, course_id, teacher_id) =>
 const allGroups = async () => await fetchData(ALL_GROUPS);
 
 const update = async (title, teacher_id, id) => {
-  console.log(title, teacher_id, id);
   const oldGroup = await fetchRow(
     `select * from groups where id=$1 RETURNING *`,
     id

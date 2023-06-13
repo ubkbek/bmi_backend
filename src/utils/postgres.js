@@ -2,7 +2,9 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi_test",
+  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi",
+  // connectionString:
+  //   "postgres://zvldiwsy:g17FAN-bgHIZqJ7L1XzSkRIaOgMz6tF5@rajje.db.elephantsql.com/zvldiwsy",
 });
 
 const fetchData = async (SQL, ...params) => {

@@ -58,11 +58,9 @@ jobs:
           fi
         shell: bash
 
-      - name: Export necessary environments
+      - name: Pull && Build docker image
         run: |
           export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
           export PROJECT_NAME=${{ env.PROJECT_NAME }}
-
-      - name: Pull && Build docker image
-        run: docker compose -f conf/docker-compose.yaml up -d
+          docker compose -f conf/docker-compose.yaml up -d
         shell: bash

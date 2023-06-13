@@ -1,0 +1,68 @@
+name: BMI Backend ci/cd
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  PROJECT_NAME: bmi-backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "17"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build push docker image
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }}
+          tags: latest
+          registry: docker.io
+          dockerfile: conf/Dockerfile
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Stop && Remove existing docker container
+        run: |
+          if docker ps -a --format '{{.Names}}' | grep -q  "^${{ env.PROJECT_NAME }}$"; then
+            docker stop ${{ env.PROJECT_NAME }}
+            docker rm ${{ env.PROJECT_NAME }}
+          fi
+
+      - name: Remove existing docker image
+        run: |
+          if docker image inspect ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }} >/dev/null 2>&1; then
+            docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }}
+          fi
+        shell: bash
+
+      - name: Export necessary environments
+        run: |
+          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          export PROJECT_NAME=${{ env.PROJECT_NAME }}
+
+      - name: Pull && Build docker image
+        run: docker compose -f conf/docker-compose.yaml up -d
+        shell: bash

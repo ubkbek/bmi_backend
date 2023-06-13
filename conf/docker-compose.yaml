@@ -8,7 +8,7 @@ services:
       - "3001:3000"
     restart: always
     depends_on:
-      - pgsql
+      - postgres
     environment:
       - DATABASE_HOST=pgsql
       - DATABASE_PORT=5432
@@ -16,7 +16,7 @@ services:
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=ubk_01001
 
-  pgsql:
+  postgres:
     image: postgres
     container_name: postgres
     ports:

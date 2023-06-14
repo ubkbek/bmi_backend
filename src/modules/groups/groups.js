@@ -71,10 +71,21 @@ const GET_COURSE_GROUPS = async (req, res) => {
   }
 };
 
+const GET_TEACHER_GROUPS = async (req, res) => {
+  try {
+    const groups = await model.getTeacherGroups(req.verifyId);
+    return res.status(200).json(groups);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json("Internal Server Error!");
+  }
+};
+
 export default {
   CREATE,
   ALL_GROUPS,
   UPDATE,
   DELETE,
   GET_COURSE_GROUPS,
+  GET_TEACHER_GROUPS,
 };

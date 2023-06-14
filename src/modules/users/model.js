@@ -108,8 +108,17 @@ const createStudent = async (name, password, phone, image) =>
 const createStudentGroup = async (student_id, group_id) =>
   await fetchRow(CREATE_STUDENT_GROUP, student_id, group_id);
 
-const createTeacher = (name, password, phone, info, course_id, image) =>
-  fetchRow(CREATE_TEACHER, name, password, phone, info, course_id, image, 2);
+const createTeacher = async (name, password, phone, info, course_id, image) =>
+  await fetchRow(
+    CREATE_TEACHER,
+    name,
+    password,
+    phone,
+    info,
+    course_id,
+    image,
+    2
+  );
 
 const allUsers = async () => await fetchData(ALL_USERS);
 

@@ -2,7 +2,7 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-//  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi_test",
+  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi",
   user: "postgres",
   password: "ubk_01001",
   host: "postgres", // This matches the service name in your Docker Compose file

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import verifyAccess from "./middlewares/verifyAccess.js";
+// import verifyAccess from "./middlewares/verifyAccess.js";
 import cors from "cors";
 import router from "./../src/routes/index.js";
 import loginRouter from "./routes/login.js";
@@ -19,7 +19,7 @@ app.use(express.json());
 // app.use(newsRouter);
 // app.use(appialsRouter);
 app.use([publicRouter, loginRouter, newsRouter, appialsRouter]);
-app.use(verifyAccess);
+// app.use(verifyAccess);
 app.use(router);
 
 app.listen(PORT, console.log(PORT));

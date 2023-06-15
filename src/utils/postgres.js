@@ -2,9 +2,12 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi",
-  // connectionString:
-  //   "postgres://zvldiwsy:g17FAN-bgHIZqJ7L1XzSkRIaOgMz6tF5@rajje.db.elephantsql.com/zvldiwsy",
+//  connectionString: "postgres://postgres:ubk_01001@localhost:5432/bmi_test",
+  user: "postgres",
+  password: "ubk_01001",
+  host: "postgres", // This matches the service name in your Docker Compose file
+  port: 5432,
+  database: "bmi_test",
 });
 
 const fetchData = async (SQL, ...params) => {

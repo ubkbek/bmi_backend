@@ -1,6 +1,6 @@
 import { fetchData, fetchRow } from "../../utils/postgres.js";
 
-const GET_ALL_NEWS = `select id, title, text, TO_CHAR(created_at, 'DD/MM/YYYY HH:MM:SS') as created_at, status from news ORDER by created_at`;
+const GET_ALL_NEWS = `select id, title, text, TO_CHAR(created_at, 'DD/MM/YYYY HH:MM:SS') as created_at, status, photo from news ORDER by created_at`;
 
 const CREATE_NEW_NEWS = `
     INSERT INTO news(title, text, photo)
